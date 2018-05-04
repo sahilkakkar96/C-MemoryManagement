@@ -1,5 +1,7 @@
-part1:	main
+part1:	main	run
 main:	main.c
-	gcc	-Wall	-Werror	-g	-o	part1	main.c	-lrt	-lpthread		  									 	
+	gcc	-Wall	-Werror	-g	-o	part1	main.c	-lrt	-lpthread
+run:	run.c
+	gcc	-Wall	-Werror	-g	-o	run	run.c	-lrt	-lpthread		  									 	
 clean:
-	rm	-f	part1
+	rm	-f	part1	run

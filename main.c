@@ -41,23 +41,36 @@ int ptov(int n) {
     return v;  
 }
 
+int cse320_virt_to_phys(int v)
+{
+	v=v>>12;
+	return v;
+}
+
+int fromBinary(const char *s) {
+  return (int) strtol(s, NULL, 2);
+}
+
 unsigned int cse320_malloc(int id)
 {
 	unsigned int va; int i,j;
 	int fifo_main,fifo_mem;
 	int phyadd;
-	fifo_main = open("fifo_main",O_RDWR);
-	if(fifo_main<1) {
-	 printf("Error opening file");
-	 }
+	
 	fifo_mem = open("fifo_mem",O_RDWR);
 	
 	if(fifo_mem<1) {
 	 printf("Error opening file");
 	 }
 	write(fifo_mem,"allocate",sizeof("allocate")); 
+	close(fifo_mem);
 
+	fifo_main = open("fifo_main",O_RDWR);
+	if(fifo_main<1) {
+	 printf("Error opening file");
+	 }
 	read(fifo_main,&phyadd,sizeof(int));
+	close(fifo_main);
 	
 	j=id;
 	for(i=0;i<1024;i++)
@@ -199,15 +212,20 @@ void *processCreate4(void *vargp)
 
 int main(int argc, char** argv) {
    
-   	char app[30],*b;
+   	char app[100],*b;
  	char *token,arr[100][100];
  	int q;
-l1:   printf("Enter Correct Command Arguments to Run\n");
+
    while(1)
 {
-    printf("Which command to run - ");
+l1: printf("Which command to run - ");
     fgets(app , sizeof(app), stdin);
     
+    if(strcmp(app,"\n")==0)
+    {
+    	printf("Enter Correct Command\n");
+    	goto l1;
+    }
     q=0;
 	size_t rem= strlen(app);
 	if(app[--rem]=='\n')
@@ -222,7 +240,11 @@ l1:   printf("Enter Correct Command Arguments to Run\n");
 	
     if(strcmp(*arr,"create")==0)
     {
-    	if(q>1) goto l1;
+    	if(q>1)
+    	{
+    		printf("Enter Correct Command Arguments to Run\n");
+    		goto l1;
+    	} 
     	if(pf1==0)
     			{
     				np=0;
@@ -275,48 +297,70 @@ l1:   printf("Enter Correct Command Arguments to Run\n");
     }
     else if(strcmp(*arr,"kill")==0)
     {
-    	if(q>2) goto l1;
+    	if(q>2)
+    	{
+    		printf("Enter Correct Command Arguments to Run\n");
+    		goto l1;
+    	} 
     	int i;
     	long proc_id;
     	proc_id= atol(*(arr+1));
-    	
-    	for(i=0;i<4;i++)
+    	i=0;
+    	while(i<4)
     	{
-    		if(tidArray[i]==proc_id)
+    		if(proc_id!=flpt[i].p_id)
     		{
-    			if(i==0)
-    			{
-    				pf1=0;
-    				tidArray[0]=0;
-    				flpt[0].p_id = 0;
-    			}
-    			else if(i==1)
-    			{
-    				pf2=0;
-    				tidArray[1]=0;
-    				flpt[1].p_id = 0;
-    			}
-    			else if(i==2)
-    			{
-    				pf3=0;
-    				tidArray[2]=0;
-    				flpt[2].p_id = 0;
-    			}
-    			else
-    			{
-    				pf4=0;
-    				tidArray[3]=0;
-    				flpt[3].p_id = 0;
-    			} 
-    			pthread_join(tid[i], (void**)&b);
+    			i++;
     		}
+    		else break;
     	}
- //TODO : Check for wrong ID
+    	if(i==4)
+    	{
+    		printf("Wrong Process ID\n");
+    	}
+    	else
+    	{
+    		for(i=0;i<4;i++)
+	    	{
+	    		if(tidArray[i]==proc_id)
+	    		{
+	    			if(i==0)
+	    			{
+	    				pf1=0;
+	    				tidArray[0]=0;
+	    				flpt[0].p_id = 0;
+	    			}
+	    			else if(i==1)
+	    			{
+	    				pf2=0;
+	    				tidArray[1]=0;
+	    				flpt[1].p_id = 0;
+	    			}
+	    			else if(i==2)
+	    			{
+	    				pf3=0;
+	    				tidArray[2]=0;
+	    				flpt[2].p_id = 0;
+	    			}
+	    			else
+	    			{
+	    				pf4=0;
+	    				tidArray[3]=0;
+	    				flpt[3].p_id = 0;
+	    			} 
+	    			pthread_join(tid[i], (void**)&b);
+	    		}
+	    	}
+    	}
     	
     }
     else if(strcmp(*arr,"list")==0)
     {
-    	if(q>1) goto l1;
+    	if(q>1)
+    	{
+    		printf("Enter Correct Command Arguments to Run\n");
+    		goto l1;
+    	} 
     	int i;
     	for(i=0;i<4;i++)
     	{
@@ -325,7 +369,11 @@ l1:   printf("Enter Correct Command Arguments to Run\n");
     } 
     else if(strcmp(*arr,"mem")==0)
     {
-    	if(q>2) goto l1;
+    	if(q>2)
+    	{
+    		printf("Enter Correct Command Arguments to Run\n");
+    		goto l1;
+    	} 
     	long proc_id;
     	proc_id= atol(*(arr+1));
     	int i,j;
@@ -386,7 +434,11 @@ l1:   printf("Enter Correct Command Arguments to Run\n");
     }
     else if(strcmp(*arr,"allocate")==0)
     {
-    	if(q>2) goto l1;
+    	if(q>2)
+    	{
+    		printf("Enter Correct Command Arguments to Run\n");
+    		goto l1;
+    	} 
     	int i;
     	long proc_id;
     	proc_id= atol(*(arr+1));
@@ -410,11 +462,73 @@ l1:   printf("Enter Correct Command Arguments to Run\n");
     }
     else if(strcmp(*arr,"read")==0)
     {
-    	if(q>3) goto l1;
+    	if(q>3)
+    	{
+    		printf("Enter Correct Command Arguments to Run\n");
+    		goto l1;
+    	} 
+    	long proc_id; 
+    	char *c;
+    	proc_id = atol(*(arr+1));
+    	int reqva;
+    	reqva = strtol(*(arr+2),&c,2);
+    	int cpa = cse320_virt_to_phys(reqva);			//got process ID for lvl 1 table and index for lvl 2 table
+    	
+    	int i;
+    	i=0;
+    	while(i<4)
+    	{
+    		if(proc_id!=flpt[i].p_id)
+    		{
+    			i++;
+    		}
+    		else break;
+    	}
+    	if(i==4)
+    	{
+    		printf("Wrong Process ID\n");
+    	}
+    	else 
+    	{
+    		char strnum[30];
+    		if(flpt[i].sl->val[cpa]!=1)
+    		{
+    			printf("No Physical Address at that Index\n");
+    			goto l1;
+    		}
+    		int a = flpt[i].sl->phy_add[cpa];			//got actual physical address
+    		sprintf(strnum, "%d", a);
+    		
+    		int fifo_main,fifo_mem;
+			
+			fifo_mem = open("fifo_mem",O_RDWR);
+			
+			if(fifo_mem<1) {
+			 printf("Error opening file");
+			 }
+			 char msg[100];
+			 strcpy(msg,"read ");
+			 strcat(msg, strnum);
+			 
+			 write(fifo_mem,msg,strlen(msg)); 
+		     close(fifo_mem);
+			int item;
+			 fifo_main = open("fifo_main",O_RDWR);
+			if(fifo_main<1) {
+			 printf("Error opening file");
+			 }
+			 read(fifo_main,&item,sizeof(int));
+			 close(fifo_main);
+			 printf("Item is : %d\n",item);
+    	}
     }
     else if(strcmp(*arr,"write")==0)
     {
-    	if(q>4) goto l1;
+    	if(q>4)
+    	{
+    		printf("Enter Correct Command Arguments to Run\n");
+    		goto l1;
+    	} 
     }
     else if(strcmp(*arr,"exit")==0)
     {

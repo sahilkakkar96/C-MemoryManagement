@@ -47,9 +47,6 @@ int cse320_virt_to_phys(int v)
 	return v;
 }
 
-int fromBinary(const char *s) {
-  return (int) strtol(s, NULL, 2);
-}
 
 unsigned int cse320_malloc(int id)
 {
@@ -240,7 +237,7 @@ l1: printf("Which command to run - ");
 	
     if(strcmp(*arr,"create")==0)
     {
-    	if(q>1)
+    	if(q!=1)
     	{
     		printf("Enter Correct Command Arguments to Run\n");
     		goto l1;
@@ -297,7 +294,7 @@ l1: printf("Which command to run - ");
     }
     else if(strcmp(*arr,"kill")==0)
     {
-    	if(q>2)
+    	if(q!=2)
     	{
     		printf("Enter Correct Command Arguments to Run\n");
     		goto l1;
@@ -329,24 +326,72 @@ l1: printf("Which command to run - ");
 	    				pf1=0;
 	    				tidArray[0]=0;
 	    				flpt[0].p_id = 0;
+	    				int cl=0;
+	    				while(flpt[0].sl->val[cl]==1)
+	    				{
+	    					int fifo_mem;
+			
+							fifo_mem = open("fifo_mem",O_RDWR);
+							
+							if(fifo_mem<1) {
+							 printf("Error opening file");
+							 }
+							 char msg[100],strnum[30];
+							 sprintf(strnum, "%d", flpt[0].sl->phy_add[cl]);
+							 strcpy(msg,"kill ");
+							 strcat(msg, strnum);
+							 size_t rem= strlen(msg);
+							msg[rem]='\0';
+							 write(fifo_mem,msg,strlen(msg)+1); 
+							
+	    					vad1[cl]=0;
+	    					va1=0;
+	    					flpt[0].sl->val[cl] = 0;
+	    					cl++;
+	    				}
+	    					    				
 	    			}
 	    			else if(i==1)
 	    			{
 	    				pf2=0;
 	    				tidArray[1]=0;
 	    				flpt[1].p_id = 0;
+	    				int cl=0;
+	    				while(flpt[1].sl->val[cl]==1)
+	    				{
+	    					vad2[cl]=0;
+	    					va2=0;
+	    					flpt[1].sl->val[cl] = 0;
+	    					cl++;
+	    				}
 	    			}
 	    			else if(i==2)
 	    			{
 	    				pf3=0;
 	    				tidArray[2]=0;
 	    				flpt[2].p_id = 0;
+	    				int cl=0;
+	    				while(flpt[2].sl->val[cl]==1)
+	    				{
+	    					vad3[cl]=0;
+	    					va3=0;
+	    					flpt[2].sl->val[cl] = 0;
+	    					cl++;
+	    				}
 	    			}
 	    			else
 	    			{
 	    				pf4=0;
 	    				tidArray[3]=0;
 	    				flpt[3].p_id = 0;
+	    				int cl=0;
+	    				while(flpt[3].sl->val[cl]==1)
+	    				{
+	    					vad4[cl]=0;
+	    					va4=0;
+	    					flpt[3].sl->val[cl] = 0;
+	    					cl++;
+	    				}
 	    			} 
 	    			pthread_join(tid[i], (void**)&b);
 	    		}
@@ -356,7 +401,7 @@ l1: printf("Which command to run - ");
     }
     else if(strcmp(*arr,"list")==0)
     {
-    	if(q>1)
+    	if(q!=1)
     	{
     		printf("Enter Correct Command Arguments to Run\n");
     		goto l1;
@@ -369,7 +414,7 @@ l1: printf("Which command to run - ");
     } 
     else if(strcmp(*arr,"mem")==0)
     {
-    	if(q>2)
+    	if(q!=2)
     	{
     		printf("Enter Correct Command Arguments to Run\n");
     		goto l1;
@@ -434,7 +479,7 @@ l1: printf("Which command to run - ");
     }
     else if(strcmp(*arr,"allocate")==0)
     {
-    	if(q>2)
+    	if(q!=2)
     	{
     		printf("Enter Correct Command Arguments to Run\n");
     		goto l1;
@@ -462,7 +507,7 @@ l1: printf("Which command to run - ");
     }
     else if(strcmp(*arr,"read")==0)
     {
-    	if(q>3)
+    	if(q!=3)
     	{
     		printf("Enter Correct Command Arguments to Run\n");
     		goto l1;
@@ -509,26 +554,78 @@ l1: printf("Which command to run - ");
 			 char msg[100];
 			 strcpy(msg,"read ");
 			 strcat(msg, strnum);
-			 
-			 write(fifo_mem,msg,strlen(msg)); 
-		     close(fifo_mem);
+			 size_t rem= strlen(msg);
+			msg[rem]='\0';
+			 write(fifo_mem,msg,strlen(msg)+1); 
 			int item;
 			 fifo_main = open("fifo_main",O_RDWR);
 			if(fifo_main<1) {
 			 printf("Error opening file");
 			 }
 			 read(fifo_main,&item,sizeof(int));
+
+			 printf("Data at given address is : %d\n",item);
+			 close(fifo_mem);
 			 close(fifo_main);
-			 printf("Item is : %d\n",item);
     	}
     }
     else if(strcmp(*arr,"write")==0)
     {
-    	if(q>4)
+    	if(q!=4)
     	{
     		printf("Enter Correct Command Arguments to Run\n");
     		goto l1;
     	} 
+    	long proc_id; 
+    	char *c;
+    	proc_id = atol(*(arr+1));
+    	int reqva;
+    	reqva = strtol(*(arr+2),&c,2);
+    	int cpa = cse320_virt_to_phys(reqva);			//got process ID for lvl 1 table and index for lvl 2 table
+    	
+    	int i;
+    	i=0;
+    	while(i<4)
+    	{
+    		if(proc_id!=flpt[i].p_id)
+    		{
+    			i++;
+    		}
+    		else break;
+    	}
+    	if(i==4)
+    	{
+    		printf("Wrong Process ID\n");
+    	}
+    	else 
+    	{
+    		char strnum[30];
+    		if(flpt[i].sl->val[cpa]!=1)
+    		{
+    			printf("No Physical Address at that Index\n");
+    			goto l1;
+    		}
+    		int a = flpt[i].sl->phy_add[cpa];			//got actual physical address
+    		sprintf(strnum, "%d", a);
+    		
+    		int fifo_mem;
+			
+			fifo_mem = open("fifo_mem",O_RDWR);
+			
+			if(fifo_mem<1) {
+			 printf("Error opening file");
+			 }
+			 char msg[100];
+			 strcpy(msg,"write ");
+			 strcat(msg, strnum);
+			 strcat(msg, " ");
+			 strcat(msg, *(arr+3));
+			 size_t rem= strlen(msg);
+     		 msg[rem]='\0';
+			 write(fifo_mem,msg,strlen(msg)+1); 
+			sleep(5);
+			close(fifo_mem);
+    	}
     }
     else if(strcmp(*arr,"exit")==0)
     {

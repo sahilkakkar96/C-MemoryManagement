@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     if(strcmp(*ar,"allocate")==0)
     {
     	i=0;
-    	while(i<1023)
+    	while(i<1024)
 		{
 			if(mem_used[i]==1) 
 			i++;

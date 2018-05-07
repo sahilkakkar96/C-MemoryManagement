@@ -316,6 +316,13 @@ l1: printf("Which command to run - ");
     		printf("Enter Correct Command Arguments to Run\n");
     		goto l1;
     	} 
+    	int fifo_mem;
+			
+							fifo_mem = open("fifo_mem",O_RDWR);
+							
+							if(fifo_mem<1) {
+							 printf("Error opening file");
+							 }
     	int i;
     	long proc_id;
     	proc_id= atol(*(arr+1));
@@ -346,13 +353,7 @@ l1: printf("Which command to run - ");
 	    				int cl=0;
 	    				while(flpt[0].sl->val[cl]==1)
 	    				{
-	    					int fifo_mem;
-			
-							fifo_mem = open("fifo_mem",O_RDWR);
-							
-							if(fifo_mem<1) {
-							 printf("Error opening file");
-							 }
+	    					
 							 char msg[100],strnum[30];
 							 sprintf(strnum, "%d", flpt[0].sl->phy_add[cl]);
 							 strcpy(msg,"kill ");
@@ -376,6 +377,13 @@ l1: printf("Which command to run - ");
 	    				int cl=0;
 	    				while(flpt[1].sl->val[cl]==1)
 	    				{
+	    					char msg[100],strnum[30];
+							 sprintf(strnum, "%d", flpt[1].sl->phy_add[cl]);
+							 strcpy(msg,"kill ");
+							 strcat(msg, strnum);
+							 size_t rem= strlen(msg);
+							msg[rem]='\0';
+							 write(fifo_mem,msg,strlen(msg)+1);
 	    					vad2[cl]=0;
 	    					va2=0;
 	    					flpt[1].sl->val[cl] = 0;
@@ -390,6 +398,13 @@ l1: printf("Which command to run - ");
 	    				int cl=0;
 	    				while(flpt[2].sl->val[cl]==1)
 	    				{
+	    					char msg[100],strnum[30];
+							 sprintf(strnum, "%d", flpt[2].sl->phy_add[cl]);
+							 strcpy(msg,"kill ");
+							 strcat(msg, strnum);
+							 size_t rem= strlen(msg);
+							msg[rem]='\0';
+							 write(fifo_mem,msg,strlen(msg)+1);
 	    					vad3[cl]=0;
 	    					va3=0;
 	    					flpt[2].sl->val[cl] = 0;
@@ -404,6 +419,13 @@ l1: printf("Which command to run - ");
 	    				int cl=0;
 	    				while(flpt[3].sl->val[cl]==1)
 	    				{
+	    					char msg[100],strnum[30];
+							 sprintf(strnum, "%d", flpt[3].sl->phy_add[cl]);
+							 strcpy(msg,"kill ");
+							 strcat(msg, strnum);
+							 size_t rem= strlen(msg);
+							msg[rem]='\0';
+							 write(fifo_mem,msg,strlen(msg)+1);
 	    					vad4[cl]=0;
 	    					va4=0;
 	    					flpt[3].sl->val[cl] = 0;
@@ -539,6 +561,7 @@ l1: printf("Which command to run - ");
     	if(cpa>1023 || cpa <0)
     	{
     		printf("error, address out of range\n");
+    		goto l1;
     	}
 /*    	if(cpa%4!=0)
     	{
@@ -629,7 +652,11 @@ l1: printf("Which command to run - ");
     	int reqva;
     	reqva = strtol(*(arr+2),&c,2);
     	int cpa = cse320_virt_to_phys(reqva);			//got process ID for lvl 1 table and index for lvl 2 table
-    	
+    	if(cpa>1023 || cpa <0)
+    	{
+    		printf("error, address out of range\n");
+    		goto l1;
+    	}
     	int i;
     	i=0;
     	while(i<4)
@@ -716,6 +743,115 @@ l1: printf("Which command to run - ");
     }
     else if(strcmp(*arr,"exit")==0)
     {
+    	int fifo_mem;
+			
+							fifo_mem = open("fifo_mem",O_RDWR);
+							
+							if(fifo_mem<1) {
+							 printf("Error opening file");
+							 }
+    	int i;
+    	for(i=0;i<4;i++)
+	    	{
+	    		if(tidArray[i]!=0)
+	    		{
+	    			if(i==0)
+	    			{
+	    				pf1=0;
+	    				tidArray[0]=0;
+	    				flpt[0].p_id = 0;
+	    				int cl=0;
+	    				while(flpt[0].sl->val[cl]==1)
+	    				{
+	    					
+							 char msg[100],strnum[30];
+							 sprintf(strnum, "%d", flpt[0].sl->phy_add[cl]);
+							 strcpy(msg,"kill ");
+							 strcat(msg, strnum);
+							 size_t rem= strlen(msg);
+							msg[rem]='\0';
+							 write(fifo_mem,msg,strlen(msg)+1); 
+							
+	    					vad1[cl]=0;
+	    					va1=0;
+	    					flpt[0].sl->val[cl] = 0;
+	    					cl++;
+	    				}
+	    					    				
+	    			}
+	    			else if(i==1)
+	    			{
+	    				pf2=0;
+	    				tidArray[1]=0;
+	    				flpt[1].p_id = 0;
+	    				int cl=0;
+	    				while(flpt[1].sl->val[cl]==1)
+	    				{
+	    					char msg[100],strnum[30];
+							 sprintf(strnum, "%d", flpt[1].sl->phy_add[cl]);
+							 strcpy(msg,"kill ");
+							 strcat(msg, strnum);
+							 size_t rem= strlen(msg);
+							msg[rem]='\0';
+							 write(fifo_mem,msg,strlen(msg)+1);
+	    					vad2[cl]=0;
+	    					va2=0;
+	    					flpt[1].sl->val[cl] = 0;
+	    					cl++;
+	    				}
+	    			}
+	    			else if(i==2)
+	    			{
+	    				pf3=0;
+	    				tidArray[2]=0;
+	    				flpt[2].p_id = 0;
+	    				int cl=0;
+	    				while(flpt[2].sl->val[cl]==1)
+	    				{
+	    					char msg[100],strnum[30];
+							 sprintf(strnum, "%d", flpt[2].sl->phy_add[cl]);
+							 strcpy(msg,"kill ");
+							 strcat(msg, strnum);
+							 size_t rem= strlen(msg);
+							msg[rem]='\0';
+							 write(fifo_mem,msg,strlen(msg)+1);
+	    					vad3[cl]=0;
+	    					va3=0;
+	    					flpt[2].sl->val[cl] = 0;
+	    					cl++;
+	    				}
+	    			}
+	    			else
+	    			{
+	    				pf4=0;
+	    				tidArray[3]=0;
+	    				flpt[3].p_id = 0;
+	    				int cl=0;
+	    				while(flpt[3].sl->val[cl]==1)
+	    				{
+	    					char msg[100],strnum[30];
+							 sprintf(strnum, "%d", flpt[3].sl->phy_add[cl]);
+							 strcpy(msg,"kill ");
+							 strcat(msg, strnum);
+							 size_t rem= strlen(msg);
+							msg[rem]='\0';
+							 write(fifo_mem,msg,strlen(msg)+1);
+	    					vad4[cl]=0;
+	    					va4=0;
+	    					flpt[3].sl->val[cl] = 0;
+	    					cl++;
+	    				}
+	    			} 
+	    			pthread_join(tid[i], (void**)&b);
+	    		}
+	    	}
+    	char msgEx[100];
+							 
+							 strcpy(msgEx,"exit");
+							 size_t rem= strlen(msgEx);
+							msgEx[rem]='\0';
+							 write(fifo_mem,msgEx,strlen(msgEx)+1);
+		close(fifo_mem);
     	exit(EXIT_SUCCESS);
     }
 	else printf("Enter Correct Command to Run\n");	

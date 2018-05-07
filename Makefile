@@ -7,4 +7,4 @@ part2:	main2
 main2:	main2.c
 	gcc	-Wall	-Werror	-g	-o	part2	main2.c	-lrt	-lpthread	  									 	
 clean:
-	rm	-f	part1	run
+	rm	-f	part1	run	part2

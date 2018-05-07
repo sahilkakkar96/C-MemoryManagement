@@ -597,7 +597,7 @@ l1: printf("Which command to run - ");
     		{
     			if( cache.padd[ca] == a && cache.val[ca] == 1)
     			{
-    				printf("Cache Hit\n");
+    				printf("cache hit\n");
     				printf("Data at given address is : %d  , printing from cache\n", cache.data[ca]);
     				break;
     			}
@@ -605,8 +605,8 @@ l1: printf("Which command to run - ");
     		}
     		if(ca==4)
     		{
-    			printf("Cache Miss\n");
-    			printf("Eviction\n");
+    			printf("cache miss\n");
+    			printf("eviction\n");
     			cache.padd[0]=a;
     			sprintf(strnum, "%d", a);
     		
@@ -685,7 +685,7 @@ l1: printf("Which command to run - ");
     		{
     			if( cache.padd[ca] == a )
     			{
-    				printf("Cache Hit\n");
+    				printf("cache hit\n");
     				cache.data[ca]=strtol(*(arr+3),&c,10);
     				cache.val[0]=1;
     				sprintf(strnum, "%d", a);
@@ -713,8 +713,8 @@ l1: printf("Which command to run - ");
     		}
     		if(ca==4)
     		{
-    			printf("Cache Miss\n");
-    			printf("Eviction\n");
+    			printf("cache miss\n");
+    			printf("eviction\n");
     			cache.padd[0] = a;
     			cache.data[0]=strtol(*(arr+3),&c,10);
     			cache.val[0]=1;

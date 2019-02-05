@@ -1,8 +1,4 @@
-# HW #5
-
-Do not cheat and good luck!
-
-/******************** DOCUMENTATION **********************/
+DOCUMENTATION (How to use)
 --------
 PART 1 : Without Cache
 --------
